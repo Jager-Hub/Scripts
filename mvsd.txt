@@ -1,0 +1,1211 @@
+-- Obby Key System GUI - LocalScript in StarterGui
+-- Configuration
+local CORRECT_CODES = {"Gun22", "383838"}
+local COPY_TEXT = "https://discord.gg/X8AzQQmZ52"
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "KeySystemGui"
+screenGui.ResetOnSpawn = false
+task.wait(0.5) -- delay before key system appears
+
+screenGui.DisplayOrder = 999999 -- highest layer
+screenGui.IgnoreGuiInset = true -- optional but recommended
+
+-- THE FIX → parent to CoreGui, not PlayerGui
+screenGui.Parent = game:GetService("CoreGui")
+
+-- Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 420, 0, 375)
+mainFrame.Position = UDim2.new(0.5, -210, 0.5, -187.5)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 25, 35)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 12)
+mainCorner.Parent = mainFrame
+
+-- Header Section
+local header = Instance.new("Frame")
+header.Size = UDim2.new(1, 0, 0, 60)
+header.BackgroundColor3 = Color3.fromRGB(15, 20, 30)
+header.BorderSizePixel = 0
+header.Parent = mainFrame
+
+local headerCorner = Instance.new("UICorner")
+headerCorner.CornerRadius = UDim.new(0, 12)
+headerCorner.Parent = header
+
+-- Logo
+local logo = Instance.new("ImageLabel")
+logo.Size = UDim2.new(0, 35, 0, 35)
+logo.Position = UDim2.new(0, 15, 0, 12)
+logo.BackgroundTransparency = 1
+logo.BorderSizePixel = 0
+logo.Image = "http://www.roblox.com/asset/?id=132932634966860"
+logo.ScaleType = Enum.ScaleType.Fit
+logo.Parent = header
+
+local logoCorner = Instance.new("UICorner")
+logoCorner.CornerRadius = UDim.new(0, 8)
+logoCorner.Parent = logo
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -65, 0, 20)
+title.Position = UDim2.new(0, 55, 0, 10)
+title.BackgroundTransparency = 1
+title.Text = '<font color="rgb(220, 40, 40)">Jäger</font> <font color="rgb(230, 230, 230)">Hub</font> <font color="rgb(230, 230, 230)">Gateway</font>'
+title.RichText = true
+title.TextColor3 = Color3.fromHex("#fef2f2") -- Text
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.TextYAlignment = Enum.TextYAlignment.Center
+title.Parent = header
+
+-- Subtitle
+local subtitle = Instance.new("TextLabel")
+subtitle.Size = UDim2.new(1, -65, 0, 15)
+subtitle.Position = UDim2.new(0, 55, 0, 32)
+subtitle.BackgroundTransparency = 1
+subtitle.Text = "Key Authorization"
+subtitle.TextColor3 = Color3.fromHex("#FFFFFF") -- Outline
+subtitle.Font = Enum.Font.Gotham
+subtitle.TextSize = 12
+subtitle.TextXAlignment = Enum.TextXAlignment.Left
+subtitle.Parent = header
+
+-- Close Button
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 30, 0, 30)
+closeBtn.Position = UDim2.new(1, -40, 0, 15)
+closeBtn.BackgroundTransparency = 1
+closeBtn.Text = "X"
+closeBtn.TextColor3 = Color3.fromHex("#fef2f2") -- Text
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 18
+closeBtn.Parent = header
+
+-- Status Label
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, -40, 0, 40)
+statusLabel.Position = UDim2.new(0, 20, 0, 80)
+statusLabel.BackgroundColor3 = Color3.fromRGB(30, 35, 45)
+statusLabel.BorderSizePixel = 0
+statusLabel.Text = "STATUS: No key detected"
+statusLabel.TextColor3 = Color3.fromHex("#dc2626") -- Button
+statusLabel.Font = Enum.Font.GothamBold
+statusLabel.TextSize = 13
+statusLabel.Parent = mainFrame
+
+local statusCorner = Instance.new("UICorner")
+statusCorner.CornerRadius = UDim.new(0, 8)
+statusCorner.Parent = statusLabel
+
+-- Key Input Container
+local inputContainer = Instance.new("Frame")
+inputContainer.Size = UDim2.new(1, -40, 0, 50)
+inputContainer.Position = UDim2.new(0, 20, 0, 140)
+inputContainer.BackgroundColor3 = Color3.fromRGB(30, 35, 45)
+inputContainer.BorderSizePixel = 0
+inputContainer.Parent = mainFrame
+
+local inputCorner = Instance.new("UICorner")
+inputCorner.CornerRadius = UDim.new(0, 8)
+inputCorner.Parent = inputContainer
+
+-- Key Icon
+local keyIcon = Instance.new("TextLabel")
+keyIcon.Size = UDim2.new(0, 40, 1, 0)
+keyIcon.BackgroundTransparency = 1
+keyIcon.Text = "🔑"
+keyIcon.TextColor3 = Color3.fromHex("#C62828") -- Icon
+keyIcon.Font = Enum.Font.Gotham
+keyIcon.TextSize = 20
+keyIcon.Parent = inputContainer
+
+-- Key Input Box
+local keyInput = Instance.new("TextBox")
+keyInput.Size = UDim2.new(1, -50, 1, -10)
+keyInput.Position = UDim2.new(0, 45, 0, 5)
+keyInput.BackgroundTransparency = 1
+keyInput.PlaceholderText = "Enter your key..."
+keyInput.PlaceholderColor3 = Color3.fromHex("#d95353") -- Placeholder
+keyInput.Text = ""
+keyInput.TextColor3 = Color3.fromHex("#fef2f2") -- Text
+keyInput.Font = Enum.Font.Gotham
+keyInput.TextSize = 14
+keyInput.TextXAlignment = Enum.TextXAlignment.Left
+keyInput.ClearTextOnFocus = false
+keyInput.Parent = inputContainer
+
+-- Redeem Button
+local redeemBtn = Instance.new("TextButton")
+redeemBtn.Size = UDim2.new(1, -40, 0, 50)
+redeemBtn.Position = UDim2.new(0, 20, 0, 200)
+redeemBtn.BackgroundColor3 = Color3.fromHex("#dc2626") -- Button
+redeemBtn.BorderSizePixel = 0
+redeemBtn.Text = "Redeem Key"
+redeemBtn.TextColor3 = Color3.fromHex("#fef2f2") -- Text
+redeemBtn.Font = Enum.Font.GothamBold
+redeemBtn.TextSize = 16
+redeemBtn.Parent = mainFrame
+
+local redeemCorner = Instance.new("UICorner")
+redeemCorner.CornerRadius = UDim.new(0, 8)
+redeemCorner.Parent = redeemBtn
+
+-- Divider
+local divider = Instance.new("Frame")
+divider.Size = UDim2.new(1, -40, 0, 1)
+divider.Position = UDim2.new(0, 20, 0, 260)
+divider.BackgroundColor3 = Color3.fromRGB(30, 35, 45)
+divider.BorderSizePixel = 0
+divider.Parent = mainFrame
+
+-- Text between divider and Get Key button
+local middleText = Instance.new("TextLabel")
+middleText.Size = UDim2.new(1, -40, 0, 25)
+middleText.Position = UDim2.new(0, 20, 0, 270)
+middleText.BackgroundTransparency = 1
+middleText.Text = "Get your free key in our Discord."
+middleText.TextColor3 = Color3.fromHex("#dc2626") -- Button
+middleText.Font = Enum.Font.Gotham
+middleText.TextSize = 12
+middleText.Parent = mainFrame
+
+-- Get Key Button
+local getKeyBtn = Instance.new("TextButton")
+getKeyBtn.Size = UDim2.new(1, -40, 0, 50)
+getKeyBtn.Position = UDim2.new(0, 20, 0, 305)
+getKeyBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 45)
+getKeyBtn.BorderSizePixel = 0
+getKeyBtn.Text = "Get Key (Discord)"
+getKeyBtn.TextColor3 = Color3.fromHex("#dc2626") -- Button
+getKeyBtn.Font = Enum.Font.GothamBold
+getKeyBtn.TextSize = 16
+getKeyBtn.Parent = mainFrame
+
+local getKeyCorner = Instance.new("UICorner")
+getKeyCorner.CornerRadius = UDim.new(0, 8)
+getKeyCorner.Parent = getKeyBtn
+
+-- Make GUI Draggable
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+if keyIsValid then
+    executeWithDelay(function()
+        runMainScript()
+    end)
+end
+
+local function update(input)
+	local delta = input.Position - dragStart
+	mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+mainFrame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = mainFrame.Position
+		
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+mainFrame.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		update(input)
+	end
+end)
+
+-- Functions
+local function showNotification(message, isSuccess)
+	statusLabel.Text = message
+	statusLabel.TextColor3 = isSuccess and Color3.fromHex("#dc2626") or Color3.fromHex("#991b1b") -- Button or Accent
+	
+	local tween = TweenService:Create(statusLabel, TweenInfo.new(0.3), {
+		BackgroundColor3 = isSuccess and Color3.fromRGB(50, 35, 45) or Color3.fromRGB(60, 30, 30)
+	})
+	tween:Play()
+	
+	wait(2)
+	
+	local resetTween = TweenService:Create(statusLabel, TweenInfo.new(0.3), {
+		BackgroundColor3 = Color3.fromRGB(30, 35, 45)
+	})
+	resetTween:Play()
+end
+
+local function runMainScript()
+
+--// Allowed game
+local allowedPlace = 12355337193 -- change this
+
+--// Delay before kicking (super fast)
+task.delay(0.5, function() -- 0.5 seconds, change to 1 if you want
+    if game.PlaceId ~= allowedPlace then
+        game:GetService("Players").LocalPlayer:Kick("wrong game dude.")
+        error("WRONG GAME — SCRIPT STOPPED", 0)
+    end
+end)
+
+--// Hard stop so nothing loads while waiting
+if game.PlaceId ~= allowedPlace then
+    return
+end
+
+--[[
+
+    WindUI Example (wip)
+    
+]]
+
+
+local WindUI
+
+do
+    local ok, result = pcall(function()
+        return require("./src/Init")
+    end)
+    
+    if ok then
+        WindUI = result
+    else 
+        WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/CodeCrucial/Noob-UI/main/main.lua"))()
+    end
+end
+
+--[[
+
+WindUI.Creator.AddIcons("solar", {
+    ["CheckSquareBold"] = "rbxassetid://132438947521974",
+    ["CursorSquareBold"] = "rbxassetid://120306472146156",
+    ["FileTextBold"] = "rbxassetid://89294979831077",
+    ["FolderWithFilesBold"] = "rbxassetid://74631950400584",
+    ["HamburgerMenuBold"] = "rbxassetid://134384554225463",
+    ["Home2Bold"] = "rbxassetid://92190299966310",
+    ["InfoSquareBold"] = "rbxassetid://119096461016615",
+    ["PasswordMinimalisticInputBold"] = "rbxassetid://109919668957167",
+    ["SolarSquareTransferHorizontalBold"] = "rbxassetid://125444491429160",
+})--]]
+
+
+function createPopup()
+    return WindUI:Popup({
+        Title = "Welcome to the Jäger Hub!",
+        Icon = "bird",
+        Content = "Hello!",
+        Buttons = {
+            {
+                Title = "Hahaha",
+                Icon = "bird",
+                Variant = "Tertiary"
+            },
+            {
+                Title = "Hahaha",
+                Icon = "bird",
+                Variant = "Tertiary"
+            },
+            {
+                Title = "Hahaha",
+                Icon = "bird",
+                Variant = "Tertiary"
+            }
+        }
+    })
+end
+
+
+
+-- */  Window  /* --
+local Window = WindUI:CreateWindow({
+    Title = "Jäger Hub  |  MVSD",
+    Author = "discord.gg/X8AzQQmZ52",
+    Folder = "Jäger",
+    Icon = "rbxassetid://132932634966860",
+    IconSize = 12.5*2.6, --original size = 12*2
+    NewElements = true,
+    --Size = UDim2.fromOffset(700,700),
+	Transparent = false, -- Enable transparency
+    HasBlur = false, -- Enable background blur
+    Acrylic = false, -- Enable Glass-like effect
+
+    HideSearchBar = true,
+    
+   User = {
+        Enabled = true,
+        Anonymous = false,
+        Callback = function()
+            print("clicked")
+        end,
+    },
+
+  Size = UDim2.fromOffset(580, 460),
+    MinSize = Vector2.new(560, 350),
+    MaxSize = Vector2.new(850, 560),
+    --Transparent = true,
+    Theme = "Red",
+    Resizable = true,
+    SideBarWidth = 200,
+    --BackgroundImageTransparency = 0.42,
+    HideSearchBar = true,
+    ScrollBarEnabled = false,
+
+    OpenButton = {
+        Title = "Open Jäger's UI", -- can be changed
+        CornerRadius = UDim.new(1,0), -- fully rounded
+        StrokeThickness = 3, -- removing outline
+        Enabled = true, -- enable or disable openbutton
+        Draggable = true,
+        OnlyMobile = false,
+        
+        Color = ColorSequence.new( -- gradient
+            Color3.fromHex("#CC1B12"), 
+            Color3.fromHex("#CC1B12")
+        )
+    },
+    Topbar = {
+        Height = 51, -- default size 44
+        ButtonsType = "Default", -- Default or Mac
+    },
+})
+
+-- */ Other Functions /* --
+local function parseJSON(luau_table, indent, level, visited)
+    indent = indent or 2
+    level = level or 0
+    visited = visited or {}
+    
+    local currentIndent = string.rep(" ", level * indent)
+    local nextIndent = string.rep(" ", (level + 1) * indent)
+    
+    if luau_table == nil then
+        return "null"
+    end
+    
+    local dataType = type(luau_table)
+    
+    if dataType == "table" then
+        if visited[luau_table] then
+            return "\"[Circular Reference]\""
+        end
+        
+        visited[luau_table] = true
+        
+        local isArray = true
+        local maxIndex = 0
+        
+        for k, _ in pairs(luau_table) do
+            if type(k) == "number" and k > maxIndex then
+                maxIndex = k
+            end
+            if type(k) ~= "number" or k <= 0 or math.floor(k) ~= k then
+                isArray = false
+                break
+            end
+        end
+        
+        local count = 0
+        for _ in pairs(luau_table) do
+            count = count + 1
+        end
+        if count ~= maxIndex and isArray then
+            isArray = false
+        end
+        
+        if count == 0 then
+            return "{}"
+        end
+        
+        if isArray then
+            if count == 0 then
+                return "[]"
+            end
+            
+            local result = "[\n"
+            
+            for i = 1, maxIndex do
+                result = result .. nextIndent .. parseJSON(luau_table[i], indent, level + 1, visited)
+                if i < maxIndex then
+                    result = result .. ","
+                end
+                result = result .. "\n"
+            end
+            
+            result = result .. currentIndent .. "]"
+            return result
+        else
+            local result = "{\n"
+            local first = true
+            
+            local keys = {}
+            for k in pairs(luau_table) do
+                table.insert(keys, k)
+            end
+            table.sort(keys, function(a, b)
+                if type(a) == type(b) then
+                    return tostring(a) < tostring(b)
+                else
+                    return type(a) < type(b)
+                end
+            end)
+            
+            for _, k in ipairs(keys) do
+                local v = luau_table[k]
+                if not first then
+                    result = result .. ",\n"
+                else
+                    first = false
+                end
+                
+                if type(k) == "string" then
+                    result = result .. nextIndent .. "\"" .. k .. "\": "
+                else
+                    result = result .. nextIndent .. "\"" .. tostring(k) .. "\": "
+                end
+                
+                result = result .. parseJSON(v, indent, level + 1, visited)
+            end
+            
+            result = result .. "\n" .. currentIndent .. "}"
+            return result
+        end
+    elseif dataType == "string" then
+        local escaped = luau_table:gsub("\\", "\\\\")
+        escaped = escaped:gsub("\"", "\\\"")
+        escaped = escaped:gsub("\n", "\\n")
+        escaped = escaped:gsub("\r", "\\r")
+        escaped = escaped:gsub("\t", "\\t")
+        
+        return "\"" .. escaped .. "\""
+    elseif dataType == "number" then
+        return tostring(luau_table)
+    elseif dataType == "boolean" then
+        return luau_table and "true" or "false"
+    elseif dataType == "function" then
+        return "\"function\""
+    else
+        return "\"" .. dataType .. "\""
+    end
+end
+
+local function tableToClipboard(luau_table, indent)
+    indent = indent or 4
+    local jsonString = parseJSON(luau_table, indent)
+    setclipboard(jsonString)
+    return jsonString
+end
+
+-- About Us --
+
+local About = Window:Tab({
+    Title = "About Us",
+    Icon = "mail", -- optional
+    Locked = false,
+})
+
+local Paragraph = About:Paragraph({
+    Title = "What Is Jäger",
+    Desc = "Jäger delivers top‑tier Roblox scripts and clean, modern systems built for exploiters who want quality.",
+    Image = "",
+    ImageSize = 30,
+    Thumbnail = "rbxassetid://82065510695490",
+    ThumbnailSize = 90,
+    Locked = false,
+})
+
+local Paragraph = About:Paragraph({
+    Title = "Community‑Driven",
+    Desc = "Our community shapes everything — your feedback guides our future updates.",
+    Image = "",
+    ImageSize = 30,
+    Thumbnail = "",
+    ThumbnailSize = 80,
+    Locked = false,
+})
+
+local Paragraph = About:Paragraph({
+    Title = "Why You Should Join",
+    Desc = "Join Jäger to help build our community's feedback and see scripts you may want.",
+    Image = "",
+    ImageSize = 30,
+    Thumbnail = "",
+    ThumbnailSize = 80,
+    Locked = false,
+})
+
+About:Select()
+
+Window:Divider()
+
+-- Combat Tab --
+
+-- Combat Tab UI (WindUI)
+local Tab = Window:Tab({
+    Title = "Combat",
+    Icon = "crosshair",
+    Locked = false,
+})
+
+-- =========================
+-- Hitbox Functions
+-- =========================
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+-- shared config (same as your pasted script)
+getgenv().HitboxSize = 6
+getgenv().HitboxColor = Color3.fromRGB(255, 0, 0) -- default red
+getgenv().HitboxTransparency = 0.7                -- you already use this
+
+getgenv().HitboxStatus = false
+getgenv().TeamCheck = false
+getgenv().HitboxShape = "Box"
+
+RunService.RenderStepped:Connect(function()
+    if not getgenv().HitboxStatus then
+        -- reset others when disabled
+        for _, v in next, Players:GetPlayers() do
+            if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                local hrp = v.Character.HumanoidRootPart
+                pcall(function()
+                    hrp.Size = Vector3.new(2, 2, 1)
+                    hrp.Transparency = 1
+                    hrp.Color = Color3.fromRGB(163, 162, 165)
+                    hrp.Material = Enum.Material.Plastic
+                    hrp.CanCollide = false
+                    hrp.Shape = Enum.PartType.Block
+                end)
+            end
+        end
+        return
+    end
+
+    -- when enabled
+    for _, v in next, Players:GetPlayers() do
+        if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+            if getgenv().TeamCheck and LocalPlayer.Team and v.Team and LocalPlayer.Team == v.Team then
+                -- team check on: skip teammates
+                continue
+            end
+
+            local hrp = v.Character.HumanoidRootPart
+
+            pcall(function()
+                hrp.Size = Vector3.new(getgenv().HitboxSize, getgenv().HitboxSize, getgenv().HitboxSize)
+                hrp.Transparency = getgenv().HitboxTransparency
+                hrp.Color = getgenv().HitboxColor
+                hrp.Material = Enum.Material.Neon
+
+                -- apply shape
+                if getgenv().HitboxShape == "Box" then
+                    hrp.Shape = Enum.PartType.Block
+                elseif getgenv().HitboxShape == "Sphere" then
+                    hrp.Shape = Enum.PartType.Ball
+                elseif getgenv().HitboxShape == "Cylinder" then
+                    hrp.Shape = Enum.PartType.Cylinder
+                end
+
+                hrp.CanCollide = false
+            end)
+        end
+    end
+end)
+
+-- =========================
+-- Toggle connection (your UI)
+-- =========================
+
+local Section = Tab:Section({ 
+    Title = "Hitbox",
+})
+
+local Toggle = Tab:Toggle({
+    Title = "Hitbox Test",
+    Desc = "When enabled expands players hitbox",
+    Default = false,
+    Callback = function(state)
+        getgenv().HitboxStatus = state
+    end
+})
+
+local playerLockEnabled = false
+
+
+local function applyLock()
+
+end
+
+local Keybind = Tab:Keybind({
+    Title = "Toggle Hitbox",
+    Desc = "Press key to toggle lock",
+    Value = "X",
+    Callback = function()
+        playerLockEnabled = not playerLockEnabled
+        Toggle:Set(playerLockEnabled)
+        applyLock()
+    end
+})
+
+local ShapeDropdown = Tab:Dropdown({
+    Title = "Hitbox Shape",
+    Desc = "Choose the hitbox shape",
+    Values = { "Box", "Sphere", "Cylinder" },
+    Value = "Box",
+    Callback = function(option)
+        getgenv().HitboxShape = option
+    end
+})
+
+local Slider = Tab:Slider({
+    Title = "Hitbox Size",
+    Desc = "Adjust the hitbox size",
+    Step = 0.5,
+    Value = {
+        Min = 2,
+        Max = 80,
+        Default = getgenv().HitboxSize or 6,
+    },
+    Callback = function(value)
+        getgenv().HitboxSize = value
+    end
+})
+
+--------------------------------------------------------------------
+-- Add-ons Tab
+--------------------------------------------------------------------
+
+local Tab = Window:Tab({
+    Title = "Add-ons",
+    Icon = "box",
+    Locked = false,
+})
+
+local Section = Tab:Section({ 
+    Title = "Team Check",
+})
+
+-- OPTIONAL: a second toggle if you want TeamCheck in your UI too
+
+local TeamToggle = Tab:Toggle({
+    Title = "Team Check",
+    Default = false,
+    Callback = function(state)
+        getgenv().TeamCheck = state
+    end
+})
+
+local Section = Tab:Section({ 
+    Title = "Hitbox Color",
+})
+
+local Colorpicker = Tab:Colorpicker({
+    Title = "Hitbox Color",
+    Desc = "Pick the color of players hitbox",
+    Default = Color3.fromRGB(255, 0, 0), -- UI default (green, change if you want)
+    Transparency = 0,
+    Locked = false,
+    Callback = function(color)
+        -- update the hitbox color used in the loop
+        getgenv().HitboxColor = color
+    end
+})
+
+local Section = Tab:Section({ 
+    Title = "Hitbox Transparency",
+})
+
+local Slider = Tab:Slider({
+    Title = "Hitbox Transparency",
+    Desc = "Adjust hitbox transparency",
+    Step = 0.1,
+    Value = {
+        Min = 0,
+        Max = 1,
+        Default = getgenv().HitboxTransparency or 0.7,
+    },
+    Callback = function(value)
+        -- update the transparency used in the loop
+        getgenv().HitboxTransparency = value
+    end
+})
+
+--------------------------------------------------------------------
+-- Buttons
+--------------------------------------------------------------------
+
+
+
+--------------------------------------------------------------------
+-- Visuals Tab
+--------------------------------------------------------------------
+
+local Tab = Window:Tab({
+    Title = "Visuals",
+    Icon = "user",
+    Locked = false,
+})
+
+-- Sections
+local SectionBox = Tab:Section({ Title = "Box ESP" })
+local SectionSkeleton = Tab:Section({ Title = "Skeleton ESP" })
+local SectionName = Tab:Section({ Title = "Name ESP" })
+local SectionTracer = Tab:Section({ Title = "Tracer ESP" })
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+-- State
+local boxESPEnabled, skeletonESPEnabled, nameESPEnabled, tracerESPEnabled = false, false, false, false
+local boxESPColor = Color3.fromRGB(0,255,0)
+local skeletonESPColor = Color3.fromRGB(255,0,0)
+local nameESPColor = Color3.fromRGB(0,200,255)
+local tracerESPColor = Color3.fromRGB(255,255,0)
+
+-- Storage
+local boxRefs = {}       -- plr -> BoxHandleAdornment
+local skelRefs = {}      -- plr -> Highlight
+local nameRefs = {}      -- plr -> BillboardGui
+local tracerRefs = {}    -- plr -> Drawing Line
+local charAddedCons = {} -- plr -> RBXScriptConnection
+
+-- Utils
+local function toColor3(c)
+    if typeof(c) == "Color3" then return c end
+    if typeof(c) == "BrickColor" then return c.Color end
+    if typeof(c) == "table" and c.r and c.g and c.b then
+        return Color3.new(c.r, c.g, c.b)
+    end
+    if typeof(c) == "table" and c.R and c.G and c.B then
+        return Color3.fromRGB(c.R, c.G, c.B)
+    end
+    return c or Color3.new(1,1,1)
+end
+
+local function safeConnect(plr, signal, fn)
+    if charAddedCons[plr] then charAddedCons[plr]:Disconnect() end
+    charAddedCons[plr] = signal:Connect(fn)
+end
+
+local function getTorso(character)
+    return character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+end
+
+-- Box ESP
+local function applyBox(plr, character)
+    if plr == LocalPlayer then return end
+    local hrp = character and character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+
+    -- remove old
+    local old = boxRefs[plr]
+    if old and old.Parent then old:Destroy() end
+
+    -- clear any stray existing
+    for _, child in ipairs(hrp:GetChildren()) do
+        if child:IsA("BoxHandleAdornment") then child:Destroy() end
+    end
+
+    local box = Instance.new("BoxHandleAdornment")
+    box.Size = Vector3.new(4,6,2)
+    box.Color3 = boxESPColor
+    box.Transparency = 0.5
+    box.AlwaysOnTop = true
+    box.ZIndex = 10
+    box.Adornee = hrp
+    box.Parent = hrp
+
+    boxRefs[plr] = box
+end
+
+local function removeBox(plr)
+    local ref = boxRefs[plr]
+    if ref then ref:Destroy() end
+    boxRefs[plr] = nil
+end
+
+-- Skeleton ESP
+local function applySkeleton(plr, character)
+    if plr == LocalPlayer then return end
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return end
+
+    local old = skelRefs[plr]
+    if old and old.Parent then old:Destroy() end
+    for _, c in ipairs(character:GetChildren()) do
+        if c:IsA("Highlight") and c.Name == "SkeletonESP" then c:Destroy() end
+    end
+
+    local hl = Instance.new("Highlight")
+    hl.Name = "SkeletonESP"
+    hl.FillTransparency = 1
+    hl.OutlineColor = skeletonESPColor
+    hl.OutlineTransparency = 0
+    hl.Parent = character
+
+    skelRefs[plr] = hl
+end
+
+local function removeSkeleton(plr)
+    local ref = skelRefs[plr]
+    if ref then ref:Destroy() end
+    skelRefs[plr] = nil
+end
+
+-- Name ESP
+local function applyName(plr, character)
+    if plr == LocalPlayer then return end
+    local head = character and character:FindFirstChild("Head")
+    if not head then return end
+
+    local old = nameRefs[plr]
+    if old and old.Parent then old:Destroy() end
+    for _, c in ipairs(head:GetChildren()) do
+        if c:IsA("BillboardGui") and c.Name == "NameESP" then c:Destroy() end
+    end
+
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "NameESP"
+    billboard.Size = UDim2.new(0, 200, 0, 50)
+    billboard.StudsOffset = Vector3.new(0, 3, 0)
+    billboard.AlwaysOnTop = true
+    billboard.Parent = head
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Text = plr.Name
+    textLabel.TextColor3 = nameESPColor
+    textLabel.TextScaled = true
+    textLabel.Font = Enum.Font.SourceSansBold
+    textLabel.Parent = billboard
+
+    nameRefs[plr] = billboard
+end
+
+local function removeName(plr)
+    local ref = nameRefs[plr]
+    if ref then ref:Destroy() end
+    nameRefs[plr] = nil
+end
+
+-- Tracer ESP
+local tracerConn
+
+local function getTracer(plr)
+    local line = tracerRefs[plr]
+    if not line then
+        line = Drawing.new("Line")
+        line.Color = tracerESPColor
+        line.Thickness = 2
+        line.Transparency = 1
+        line.Visible = false
+        tracerRefs[plr] = line
+    end
+    return line
+end
+
+local function updateTracers()
+    local bottom = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y)
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            local hrp = plr.Character.HumanoidRootPart
+            local pos, on = Camera:WorldToViewportPoint(hrp.Position)
+            local line = getTracer(plr)
+            if on then
+                line.From = bottom
+                line.To = Vector2.new(pos.X, pos.Y)
+                line.Color = tracerESPColor
+                line.Visible = true
+            else
+                line.Visible = false
+            end
+        else
+            local line = tracerRefs[plr]
+            if line then line.Visible = false end
+        end
+    end
+end
+
+local function clearTracers()
+    for plr, line in pairs(tracerRefs) do
+        line.Visible = false
+        line:Remove()
+        tracerRefs[plr] = nil
+    end
+end
+
+-- Toggles
+local function toggleBoxESP(state)
+    boxESPEnabled = state
+    if state then
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer then
+                if plr.Character then applyBox(plr, plr.Character) end
+                safeConnect(plr, plr.CharacterAdded, function(char)
+                    if boxESPEnabled and plr ~= LocalPlayer then
+                        char:WaitForChild("HumanoidRootPart")
+                        applyBox(plr, char)
+                    end
+                end)
+            end
+        end
+    else
+        for _, plr in ipairs(Players:GetPlayers()) do
+            removeBox(plr)
+        end
+    end
+end
+
+local function toggleSkeletonESP(state)
+    skeletonESPEnabled = state
+    if state then
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer then
+                if plr.Character then applySkeleton(plr, plr.Character) end
+                safeConnect(plr, plr.CharacterAdded, function(char)
+                    if skeletonESPEnabled and plr ~= LocalPlayer then
+                        char:WaitForChild("Humanoid")
+                        applySkeleton(plr, char)
+                    end
+                end)
+            end
+        end
+    else
+        for _, plr in ipairs(Players:GetPlayers()) do
+            removeSkeleton(plr)
+        end
+    end
+end
+
+local function toggleNameESP(state)
+    nameESPEnabled = state
+    if state then
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer then
+                if plr.Character then applyName(plr, plr.Character) end
+                safeConnect(plr, plr.CharacterAdded, function(char)
+                    if nameESPEnabled and plr ~= LocalPlayer then
+                        char:WaitForChild("Head")
+                        applyName(plr, char)
+                    end
+                end)
+            end
+        end
+    else
+        for _, plr in ipairs(Players:GetPlayers()) do
+            removeName(plr)
+        end
+    end
+end
+
+local function toggleTracerESP(state)
+    tracerESPEnabled = state
+    if state then
+        if not tracerConn then
+            tracerConn = RunService.RenderStepped:Connect(updateTracers)
+        end
+    else
+        if tracerConn then tracerConn:Disconnect() tracerConn = nil end
+        clearTracers()
+    end
+end
+
+-- UI Controls + live color updates
+SectionBox:Toggle({
+    Title="Box ESP", Desc="Enable/disable box ESP", Default=false,
+    Callback=function(state) toggleBoxESP(state) end
+})
+SectionBox:Colorpicker({
+    Title="Box Color", Desc="Pick box ESP color", Default=boxESPColor,
+    Transparency=0,
+    Callback=function(color)
+        boxESPColor = toColor3(color)
+        if boxESPEnabled then
+            for plr, adorn in pairs(boxRefs) do
+                if adorn and adorn.Parent then
+                    adorn.Color3 = boxESPColor
+                end
+            end
+        end
+    end
+})
+
+SectionSkeleton:Toggle({
+    Title="Skeleton ESP", Desc="Enable/disable skeleton ESP", Default=false,
+    Callback=function(state) toggleSkeletonESP(state) end
+})
+SectionSkeleton:Colorpicker({
+    Title="Skeleton Color", Desc="Pick skeleton ESP color", Default=skeletonESPColor,
+    Transparency=0,
+    Callback=function(color)
+        skeletonESPColor = toColor3(color)
+        if skeletonESPEnabled then
+            for plr, hl in pairs(skelRefs) do
+                if hl and hl.Parent then
+                    hl.OutlineColor = skeletonESPColor
+                end
+            end
+        end
+    end
+})
+
+SectionName:Toggle({
+    Title="Name ESP", Desc="Enable/disable name ESP", Default=false,
+    Callback=function(state) toggleNameESP(state) end
+})
+SectionName:Colorpicker({
+    Title="Name Color", Desc="Pick name ESP color", Default=nameESPColor,
+    Transparency=0,
+    Callback=function(color)
+        nameESPColor = toColor3(color)
+        if nameESPEnabled then
+            for plr, gui in pairs(nameRefs) do
+                if gui and gui.Parent then
+                    local label = gui:FindFirstChildOfClass("TextLabel")
+                    if label then label.TextColor3 = nameESPColor end
+                end
+            end
+        end
+    end
+})
+
+SectionTracer:Toggle({
+    Title="Tracer ESP", Desc="Enable/disable tracer ESP", Default=false,
+    Callback=function(state) toggleTracerESP(state) end
+})
+SectionTracer:Colorpicker({
+    Title="Tracer Color", Desc="Pick tracer ESP color", Default=tracerESPColor,
+    Transparency=0,
+    Callback=function(color)
+        tracerESPColor = toColor3(color)
+        if tracerESPEnabled then
+            for _, line in pairs(tracerRefs) do
+                line.Color = tracerESPColor
+            end
+        end
+    end
+})
+
+end  -- closes runMainScript()
+
+
+-- Now your validateKey function starts AFTER runMainScript
+local function validateKey()
+	local enteredKey = keyInput.Text
+	
+	if enteredKey == "" then
+		showNotification("STATUS: Please enter a key", false)
+		return
+	end
+	
+	-- Check if entered key matches any valid code
+	local isValid = false
+	for _, code in pairs(CORRECT_CODES) do
+		if enteredKey == code then
+			isValid = true
+			break
+		end
+	end
+	
+	if isValid then
+		showNotification("STATUS: Key accepted!", true)
+		redeemBtn.BackgroundColor3 = Color3.fromRGB(28, 115, 28)
+		redeemBtn.Text = "✓ Access Granted"
+		redeemBtn.Active = false
+		
+		-- Wait a moment for visual feedback, then run the main script
+		wait(1)
+		runMainScript()
+		
+		-- Hide the key system GUI after loading
+		wait(0.001)
+		screenGui:Destroy()
+		
+	else
+		showNotification("STATUS: Invalid key", false)
+		keyInput.Text = ""
+	end
+end
+
+-- Button Hover Effects
+redeemBtn.MouseEnter:Connect(function()
+	if redeemBtn.Active ~= false then
+		TweenService:Create(redeemBtn, TweenInfo.new(0.2), {
+			BackgroundColor3 = Color3.fromHex("#991b1b") -- Accent (darker red on hover)
+		}):Play()
+	end
+end)
+
+redeemBtn.MouseLeave:Connect(function()
+	if redeemBtn.Active ~= false then
+		TweenService:Create(redeemBtn, TweenInfo.new(0.2), {
+			BackgroundColor3 = Color3.fromHex("#dc2626") -- Button (back to normal)
+		}):Play()
+	end
+end)
+
+getKeyBtn.MouseEnter:Connect(function()
+	TweenService:Create(getKeyBtn, TweenInfo.new(0.2), {
+		BackgroundColor3 = Color3.fromRGB(40, 45, 55)
+	}):Play()
+end)
+
+getKeyBtn.MouseLeave:Connect(function()
+	TweenService:Create(getKeyBtn, TweenInfo.new(0.2), {
+		BackgroundColor3 = Color3.fromRGB(30, 35, 45)
+	}):Play()
+	end)
+
+-- Button Connections
+redeemBtn.MouseButton1Click:Connect(validateKey)
+closeBtn.MouseButton1Click:Connect(function()
+	screenGui:Destroy()
+end)
+
+getKeyBtn.MouseButton1Click:Connect(function()
+	-- Copy text to clipboard
+	setclipboard(COPY_TEXT)
+	
+	-- Show "Copied!" feedback
+	local originalText = getKeyBtn.Text
+	getKeyBtn.Text = "✓ Copied!"
+	
+	wait(1.5)
+	
+	getKeyBtn.Text = originalText
+end)
+
+-- Allow Enter key to submit
+keyInput.FocusLost:Connect(function(enterPressed)
+	if enterPressed then
+		validateKey()
+	end
+end)
